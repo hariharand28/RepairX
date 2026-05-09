@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment Variables
+.env
+.env.local
+client/.env
+server/.env
+
+# Build outputs
+dist/
+client/dist/
+.vercel/

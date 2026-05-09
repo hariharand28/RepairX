@@ -1,0 +1,86 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --color-primary: #0066FF;
+  --color-primary-hover: #0052CC;
+  --font-sans: "Inter", "DM Sans", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+}
+
+:root {
+  background-color: #FAFAFA; /* Off-white for premium feel */
+  color: #111827;
+  font-family: var(--font-sans);
+}
+
+/* Smooth scrolling for the whole page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Luxury Animations and Utilities */
+@layer utilities {
+  /* 1. Shimmer Effect for Buttons/Cards */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  /* 2. Glowing Beam Effect for Dividers */
+  @keyframes beam {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+  }
+  .animate-beam {
+    animation: beam 3s infinite;
+  }
+
+  /* 3. Curved Marquee Text Movement */
+  @keyframes curve-move {
+    from { startOffset: 0%; }
+    to { startOffset: -100%; }
+  }
+  .animate-curve-scroll {
+    animation: curve-move 30s linear infinite;
+  }
+ 
+
+@media print {
+  /* Hide everything except the invoice div */
+  body * {
+    visibility: hidden;
+  }
+  #invoice-print, #invoice-print * {
+    visibility: visible;
+  }
+  #invoice-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+  /* 4. Standard Marquee Scroll */
+  @keyframes scroll-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+  .animate-scroll {
+    animation: scroll-marquee 40s linear infinite;
+  }
+
+  /* 5. Utility to hide scrollbars while keeping functionality */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
