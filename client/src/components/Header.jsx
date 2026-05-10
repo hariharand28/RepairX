@@ -17,7 +17,6 @@ const [profileName, setProfileName] = useState('Profile');
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
   const [role, setRole] = useState(null);
 
-
   useEffect(() => {
     
     const controlNavbar = () => {
@@ -39,16 +38,28 @@ const [profileName, setProfileName] = useState('Profile');
 
   useEffect(() => {
     if (user) {
-      // Fetch the full name from the profiles table based on user ID
+      // Use .maybeSingle() to prevent the 406 crash for new Google users
       supabase
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("Header profile fetch error:", error);
+          }
+
           if (data?.full_name) {
-            // Split to show only the first name for a cleaner look
+            // Profile exists, show first name
             setProfileName(data.full_name.split(' ')[0].toUpperCase());
+          } else {
+            // Fallback: Read name directly from Google login metadata
+            const googleName = user?.user_metadata?.full_name || user?.user_metadata?.name;
+            if (googleName) {
+              setProfileName(googleName.split(' ')[0].toUpperCase());
+            } else {
+              setProfileName('USER'); // Final safety fallback
+            }
           }
         });
     } else {

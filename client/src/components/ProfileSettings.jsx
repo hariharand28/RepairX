@@ -7,6 +7,7 @@ export default function ProfileSettings() {
   const { user } = useStore();
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [address, setAddress] = useState('');
   const [formData, setFormData] = useState({
     full_name: '',
     mobile: '',
