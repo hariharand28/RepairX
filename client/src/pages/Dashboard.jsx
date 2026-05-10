@@ -45,9 +45,16 @@ export default function Dashboard() {
       }
       
       // Fetch role and profile name
-      const { data: profile } = await supabase.from('profiles').select('role, full_name').eq('id', session.user.id).single();
-      setRole(profile.role?.role || 'customer');
-      if (profile?.full_name) setProfileName(profile.full_name);
+     // Fetch role and profile name safely
+const { data: profile, error } = await supabase.from('profiles').select('role, full_name').eq('id', session.user.id).maybeSingle();
+
+if (profile) {
+  setRole(profile.role || 'customer');
+  if (profile.full_name) setProfileName(profile.full_name);
+} else {
+  // Fallback for first-time Google login when profile doesn't exist yet
+  setRole('customer');
+}
       
       setAuthChecking(false);
 
