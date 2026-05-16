@@ -48,7 +48,7 @@ export default function Cart() {
 
     try {
       // 1. Request Order Creation from your Node.js backend server
-      const responseBackend = await fetch('http://repairx-production.up.railway.app', {
+      const responseBackend = await fetch('https://repairx-production.up.railway.app', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
