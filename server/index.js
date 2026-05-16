@@ -8,7 +8,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173' })); // Allows your Vite frontend to talk to this server
+app.use(cors({
+  origin: [
+    'http://localhost:5173', 
+    'https://repair-x-gamma.vercel.app' // Add your live frontend URL
+  ], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+})); // Allows your Vite frontend to talk to this server
 app.use(express.json());
 
 // Initialize Supabase Client with Service Role Key
