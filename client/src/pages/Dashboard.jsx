@@ -109,7 +109,7 @@ const handleCancelOrder = async (orderId) => {
   if (window.confirm("Are you sure you want to cancel this repair?")) {
     try {
       // 1. Send request to your Node server
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}/cancel`, {
+      const response = await fetch(`https://repairx-production.up.railway.app/api/orders/${orderId}/cancel`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
