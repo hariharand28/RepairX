@@ -1,6 +1,6 @@
 // src/components/BookingModal.jsx
 import { useState, useEffect } from "react";
-import { supabase } from "../supabase";
+import MapPicker from './MapPicker';
 
 const modalStyle = `
   @keyframes modalIn {
@@ -55,10 +55,11 @@ function Field({ label, children }) {
 }
 
 export default function BookingModal({ service, user, onClose, onSuccess }) {
-  const [address, setAddress]   = useState("");
-  const [date, setDate]         = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState(null);
+  const [address, setAddress] = useState("");
+  const [date, setDate] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [serviceLocation, setServiceLocation] = useState(null);
 
   // Close on Escape
   useEffect(() => {
@@ -70,24 +71,41 @@ export default function BookingModal({ service, user, onClose, onSuccess }) {
   const minDate = new Date().toISOString().split("T")[0];
 
   async function handleConfirm() {
-    if (!address.trim()) { setError("Please enter your address."); return; }
-    if (!date)           { setError("Please choose a preferred date."); return; }
+    if (!address.trim()) { setError("Please enter your delivery address."); return; }
+    if (!serviceLocation) { setError("Please pin your exact location on the map."); return; }
+    if (!date) { setError("Please choose a preferred date."); return; }
+    
     setError(null);
     setLoading(true);
 
-    const { error: dbErr } = await supabase
-      .from("bookings")
-      .insert({
-        user_id:      user.id,
-        service_id:   service.id,
-        status:       "pending",
-        booking_date: new Date(date).toISOString(),
-        address:      address.trim(),
+    try {
+      // Step 5: Send data to Express backend instead of Supabase
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          service_id: service.id,
+          status: "pending",
+          booking_date: new Date(date).toISOString(),
+          address: address.trim(),
+          address_lat: serviceLocation.lat,
+          address_lng: serviceLocation.lng
+        })
       });
 
-    setLoading(false);
-    if (dbErr) { setError(dbErr.message); return; }
-    onSuccess();
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to create order");
+      }
+
+      onSuccess();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const inputShared = {
@@ -111,7 +129,7 @@ export default function BookingModal({ service, user, onClose, onSuccess }) {
           display:"flex", alignItems:"center", justifyContent:"center", padding:20,
         }}
       >
-        {/* Card — stop propagation so clicks inside don't close */}
+        {/* Card */}
         <div className="modal-card" onClick={e=>e.stopPropagation()} style={{ width:"100%", maxWidth:420, borderRadius:6, padding:"36px 32px 32px", position:"relative" }}>
 
           {/* Close */}
@@ -146,10 +164,15 @@ export default function BookingModal({ service, user, onClose, onSuccess }) {
                 value={address}
                 onChange={e=>setAddress(e.target.value)}
                 placeholder="Building, street, city…"
-                rows={3}
+                rows={2}
                 className="modal-input"
                 style={{ ...inputShared, resize:"none", lineHeight:1.6 }}
               />
+            </Field>
+
+            {/* NEW: Map Picker Field */}
+            <Field label="Pin Exact Location">
+              <MapPicker onLocationSelect={(loc) => setServiceLocation(loc)} />
             </Field>
 
             <Field label="Preferred Date">

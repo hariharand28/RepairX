@@ -35,56 +35,91 @@ export default function Cart() {
   };
 
   // Integrated Razorpay Payment Logic
-  const handleRazorpayPayment = () => {
+  // Integrated Razorpay Payment Logic via Node.js Backend
+  const handleRazorpayPayment = async () => {
     if (!checkoutData.date || !checkoutData.time || !checkoutData.address) {
       alert("Please fill in all details (Address, Date, and Time) first.");
       return;
     }
 
+    setProcessing(true);
+
     const amountToPay = checkoutData.payMode === 'advance' ? 100 : cartTotal;
 
-    const options = {
-      key: "rzp_test_SnLJlkyOCuYhoR", 
-      amount: amountToPay * 100, // Amount in paise
-      currency: "INR",
-      name: "RepairConnect",
-      description: "Service Booking Payment",
-      handler: async function (response) {
-        setProcessing(true);
-        try {
-          const orderRecord = {
-            user_id: user.id,
-            items: cart,
-            total_amount: cartTotal,
-            advance_paid: amountToPay,
-            status: 'Pending',
-            service_address: checkoutData.address,
-            scheduled_date: checkoutData.date,
-            scheduled_time: checkoutData.time,
-            payment_id: response.razorpay_payment_id // Storing transaction ID
-          };
+    try {
+      // 1. Request Order Creation from your Node.js backend server
+      const responseBackend = await fetch('http://localhost:5000/api/payments/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          amount: amountToPay // Dynamic amount based on selection
+        })
+      });
 
-          const { data, error } = await supabase.from('orders').insert(orderRecord).select().single();
-          if (error) throw error;
+      const backendOrder = await responseBackend.json();
 
-          setInvoice({ ...orderRecord, id: data.id });
-          clearCart();
-        } catch (err) {
-          alert("Order recording failed: " + err.message);
-        } finally {
-          setProcessing(false);
-        }
-      },
-      prefill: {
-        name: checkoutData.name,
-        email: user.email,
-        contact: checkoutData.mobile
-      },
-      theme: { color: "#2563EB" }
+      if (backendOrder.error) {
+        throw new Error(backendOrder.error);
+      }
+
+      // 2. Map standard config properties alongside backend Order ID
+      const options = {
+        key: "rzp_test_SpwmGQPuphJpvA", // Your test key mapping
+        amount: backendOrder.amount,   // Amount in paise directly from backend
+        currency: backendOrder.currency,
+        name: "RepairX",
+        description: "Service Booking Payment",
+        order_id: backendOrder.id,     // CRITICAL: Linking backend instance ID
+
+        handler: async function (response) {
+  setProcessing(true);
+  try {
+    const orderRecord = {
+      user_id: user.id, 
+      items: cart, 
+      total_amount: cartTotal, 
+      advance_paid: amountToPay, 
+      status: 'Paid', // Change from 'Pending' to 'Paid' since transaction succeeded
+      service_address: checkoutData.address, 
+      scheduled_date: checkoutData.date, 
+      scheduled_time: checkoutData.time, 
+      payment_id: response.razorpay_payment_id 
     };
+    
+    // Save record to database
+    const { data, error } = await supabase.from('orders').insert(orderRecord).select().single(); 
+    if (error) throw error;
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    setInvoice({ ...orderRecord, id: data.id }); 
+    clearCart(); 
+  } catch (err) {
+    alert("Order recording failed: " + err.message);
+  } finally {
+    setProcessing(false); 
+  }
+},
+        prefill: {
+          name: checkoutData.name,
+          email: user.email,
+          contact: checkoutData.mobile
+        },
+        theme: { color: "#2563EB" },
+        modal: {
+          ondismiss: function() {
+            setProcessing(false); // Resets loading state if user exits layout
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch (err) {
+      alert("Payment Initiation Failed: " + err.message);
+      setProcessing(false);
+    }
   };
 
   if (invoice) {

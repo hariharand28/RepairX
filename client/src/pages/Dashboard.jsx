@@ -107,15 +107,28 @@ if (profile) {
 
 const handleCancelOrder = async (orderId) => {
   if (window.confirm("Are you sure you want to cancel this repair?")) {
-    const { error } = await supabase.from('orders').update({ status: 'Cancelled' }).eq('id', orderId);
-    
-    if (!error) {
-      // Instantly update the UI without reloading the page
-      setOrders(prevOrders => prevOrders.map(order => 
-        order.id === orderId ? { ...order, status: 'Cancelled' } : order
-      ));
-    } else {
-      alert("Failed to cancel: " + error.message);
+    try {
+      // 1. Send request to your Node server
+      const response = await fetch(`http://localhost:5000/api/orders/${orderId}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      // 2. Update the UI if the backend says it was successful
+      if (result.success) {
+        setOrders(prevOrders => prevOrders.map(order => 
+          order.id === orderId ? { ...order, status: 'Cancelled' } : order
+        ));
+      } else {
+        alert("Failed to cancel: " + result.error);
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      alert("Network error while trying to cancel.");
     }
   }
 };

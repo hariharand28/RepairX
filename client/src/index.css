@@ -74,7 +74,6 @@ html {
   .animate-scroll {
     animation: scroll-marquee 40s linear infinite;
   }
-
   /* 5. Utility to hide scrollbars while keeping functionality */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
