@@ -48,8 +48,8 @@ export default function Cart() {
 
     try {
       // 1. Request Order Creation from your Node.js backend server
-const response = await fetch('https://repairx-production.up.railway.app/api/payments/create-order', {
-          method: 'POST',
+  const responseBackend = await fetch('https://repairx-production.up.railway.app/api/payments/create-order', {
+            method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -57,7 +57,7 @@ const response = await fetch('https://repairx-production.up.railway.app/api/paym
           amount: amountToPay // Dynamic amount based on selection
         })
       });
-
+      
       const backendOrder = await responseBackend.json();
 
       if (backendOrder.error) {
