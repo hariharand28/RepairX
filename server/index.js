@@ -7,13 +7,14 @@ const Razorpay = require('razorpay');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
 // Middleware
 app.use(cors({
   origin: [
     'http://localhost:5173', 
     'https://repair-x-gamma.vercel.app' // Add your live frontend URL
   ], 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   credentials: true
 })); // Allows your Vite frontend to talk to this server
 app.use(express.json());
@@ -89,7 +90,6 @@ app.patch('/api/orders/:orderId/cancel', async (req, res) => {
 });
 // --- Create Razorpay Order Route ---
 // Make sure this line exists somewhere after app.use(express.json());
-app.use(express.json()); 
 
 // PASTING THE ROUTE DIRECTLY IN INDEX.JS:
 app.post('/api/payments/create-order', async (req, res) => {
