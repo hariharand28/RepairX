@@ -39,7 +39,7 @@ export default function PremiumFooter() {
   </Link>
 
   <Link 
-    to="/services" 
+    to="/login" 
     className="bg-transparent border-2 border-white/20 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-xs hover:bg-white hover:text-gray-900 transition-all duration-500"
   >
     Become a Partner
@@ -81,31 +81,35 @@ export default function PremiumFooter() {
           <div className="flex flex-col gap-4">
             <h4 className="font-bold tracking-widest uppercase text-xs text-blue-500 mb-2">Services</h4>
             {["Smartphone Repair", "Laptop & Mac", "AC & Appliances", "Smart Home IoT"].map((link) => (
-              <a key={link} href="#" className="text-gray-400 text-sm hover:text-white transition-all">{link}</a>
+              <a key={link} href="/services" className="text-gray-400 text-sm hover:text-white transition-all">{link}</a>
             ))}
           </div>
 
-          <div className="flex flex-col gap-4">
-            <h4 className="font-bold tracking-widest uppercase text-xs text-blue-500 mb-2">Company</h4>
-            {["About Us", "How It Works", "Careers", "Privacy Policy"].map((link) => (
-              <a key={link} href="#" className="text-gray-400 text-sm hover:text-white transition-all">{link}</a>
-            ))}
-          </div>
-
+         <div className="flex flex-col gap-4">
+  <h4 className="font-bold tracking-widest uppercase text-xs text-blue-500 mb-2">Company</h4>
+  
+  {[
+    { name: "About Us", path: "/#about" },
+    { name: "How It Works", path: "/#how-it-works" },
+    { name: "Careers", path: "/careers" },
+    { name: "Privacy Policy", path: "/privacy-policy" }
+  ].map((link) => (
+    <Link 
+      key={link.name} 
+      to={link.path} 
+      className="text-gray-400 text-sm hover:text-white transition-all"
+    >
+      {link.name}
+    </Link>
+  ))}
+</div>
           <div className="flex flex-col gap-6">
             <h4 className="font-bold tracking-widest uppercase text-xs text-blue-500">Contact</h4>
             <div className="flex flex-col gap-3 text-sm text-gray-400">
               <span className="flex items-center gap-3"><Mail size={16} className="text-blue-600"/> support@repairx.com</span>
               <span className="flex items-center gap-3"><Phone size={16} className="text-blue-600"/> 1800-REPAIR-NOW</span>
             </div>
-            <div className="flex gap-2">
-              <button className="flex-1 bg-white/5 border border-white/10 rounded-xl p-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-tighter">
-                <Apple size={14} /> iOS App
-              </button>
-              <button className="flex-1 bg-white/5 border border-white/10 rounded-xl p-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-tighter">
-                <Play size={12} /> Android
-              </button>
-            </div>
+            
           </div>
         </div>
 
@@ -118,13 +122,33 @@ export default function PremiumFooter() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] uppercase tracking-[0.2em] text-gray-500">
           <div>© 2026 RepairX Platform</div>
           
-          <div className="flex items-center gap-6">
-            {[Globe, Share2, MessageCircle, Layout].map((Icon, i) => (
-              <a key={i} href="#" className="hover:text-blue-500 transition-all">
-                <Icon size={16} />
-              </a>
-            ))}
-          </div>
+          {/* Define the functional links array */}
+{(() => {
+  const socialLinks = [
+    { icon: Globe, label: 'Website', url: 'https://repair-x-gamma.vercel.app', target: '_blank' },
+    { icon: Share2, label: 'Share', url: '#', action: () => navigator.share?.({ title: 'RepairX', url: window.location.href }) },
+    { icon: MessageCircle, label: 'Support', url: 'mailto:support@repairx.com', target: '_self' },
+    { icon: Layout, label: 'Dashboard', url: '/dashboard', target: '_self' }
+  ];
+
+  return (
+    <div className="flex items-center gap-6">
+      {socialLinks.map((item, i) => (
+        <a 
+          key={i} 
+          href={item.url}
+          target={item.target}
+          rel={item.target === '_blank' ? "noopener noreferrer" : ""}
+          onClick={item.action}
+          aria-label={item.label}
+          className="text-gray-500 hover:text-blue-400 transition-all duration-300 transform hover:-translate-y-0.5"
+        >
+          <item.icon size={18} />
+        </a>
+      ))}
+    </div>
+  );
+})()}
 
           <div className="font-medium">
             Developed by <span className="text-white font-black">Hariharan D</span>

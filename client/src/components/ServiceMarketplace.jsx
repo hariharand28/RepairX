@@ -1,290 +1,507 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  MapPin, ChevronDown, Filter, Smartphone, Laptop, Wind, 
-  Tv, ShieldCheck, Clock, Star, Info, ShoppingCart, X
-} from 'lucide-react';
-import useStore from '../store/useStore';
-import { useLocation } from 'react-router-dom';
-import SearchBar from './SearchBar'; // [cite: 117]
-
-const categories = [
-  { id: 'mobile', name: 'Mobile Devices', icon: Smartphone, count: 42 },
-  { id: 'laptop', name: 'Mac & PC', icon: Laptop, count: 28 },
-  { id: 'appliances', name: 'Appliances', icon: Wind, count: 56 },
-  { id: 'electronics', name: 'Smart Home', icon: Tv, count: 14 },
-]; // [cite: 118]
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import useStore from '../store/useStore'; // [cite: 17]
 
 const mockServices = [
   // MOBILE DEVICES
-  { id: 'SRV-001', category: 'mobile', title: 'iPhone Screen Replacement', desc: 'OLED calibration & water-seal restoration.', price: '₹4,999', rating: '4.9', reviews: 128, eta: '45 mins', warranty: '90-Day', badges: ['Most Booked', 'Same Day'], techsAvailable: 4, bookedToday: 12, image: 'https://placehold.co/150x150/f8fafc/334155?text=iPhone+Screen' },
-  { id: 'SRV-004', category: 'mobile', title: 'Original Battery Swap', desc: 'High-capacity OEM battery with health check.', price: '₹1,499', rating: '4.8', reviews: 256, eta: '30 mins', warranty: '6-Month', badges: ['Fast'], techsAvailable: 6, bookedToday: 24, image: 'https://placehold.co/150x150/f8fafc/334155?text=Battery' },
-  { id: 'SRV-005', category: 'mobile', title: 'Water Damage Diagnostics', desc: 'Ultrasonic cleaning & motherboard test.', price: '₹999', rating: '4.6', reviews: 89, eta: '24 Hours', warranty: 'N/A', badges: ['Emergency'], techsAvailable: 2, bookedToday: 5, image: 'https://placehold.co/150x150/f8fafc/334155?text=Water+Damage' },
-  { id: 'SRV-006', category: 'mobile', title: 'Charging Port Repair', desc: 'Lint removal and flex cable replacement.', price: '₹1,299', rating: '4.9', reviews: 112, eta: '45 mins', warranty: '90-Day', badges: ['Common'], techsAvailable: 5, bookedToday: 18, image: 'https://placehold.co/150x150/f8fafc/334155?text=Charging+Port' },
-  { id: 'SRV-007', category: 'mobile', title: 'Laser Back Glass Repair', desc: 'Precision laser removal of shattered back glass.', price: '₹2,499', rating: '4.7', reviews: 64, eta: '2 Hours', warranty: '90-Day', badges: ['Premium'], techsAvailable: 3, bookedToday: 8, image: 'https://placehold.co/150x150/f8fafc/334155?text=Back+Glass' },
-  { id: 'SRV-008', category: 'mobile', title: 'Camera Lens & Module Fix', desc: 'OIS calibration and sapphire lens replacement.', price: '₹3,499', rating: '4.8', reviews: 92, eta: '1 Hour', warranty: '6-Month', badges: ['Quality'], techsAvailable: 4, bookedToday: 11, image: 'https://placehold.co/150x150/f8fafc/334155?text=Camera+Repair' },
+  { id: 'SRV-001', category: 'mobile', title: 'iPhone Screen Replacement', desc: 'OLED calibration & water-seal restoration.', price: '₹4,999', rating: '4.9', reviews: 128, eta: '45 mins', warranty: '90-Day', badges: ['Most Booked', 'Same Day'], techsAvailable: 4, bookedToday: 12, image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-002', category: 'mobile', title: 'Original Battery Swap', desc: 'High-capacity OEM battery replacement.', price: '₹1,499', rating: '4.8', reviews: 256, eta: '30 mins', warranty: '6-Month', badges: ['Fast'], techsAvailable: 6, bookedToday: 24, image: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-003', category: 'mobile', title: 'Charging Port Repair', desc: 'Flex cable & charging IC repair.', price: '₹1,299', rating: '4.9', reviews: 112, eta: '45 mins', warranty: '90-Day', badges: ['Common'], techsAvailable: 5, bookedToday: 18, image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-004', category: 'mobile', title: 'Samsung AMOLED Screen Fix', desc: 'OEM AMOLED panel replacement.', price: '₹5,499', rating: '4.8', reviews: 98, eta: '1 Hour', warranty: '90-Day', badges: ['Premium'], techsAvailable: 4, bookedToday: 9, image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-005', category: 'mobile', title: 'Water Damage Diagnostics', desc: 'Ultrasonic motherboard cleaning.', price: '₹999', rating: '4.6', reviews: 89, eta: '24 Hours', warranty: 'N/A', badges: ['Emergency'], techsAvailable: 2, bookedToday: 5, image: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-006', category: 'mobile', title: 'Camera Lens Replacement', desc: 'Rear camera lens & sensor repair.', price: '₹2,499', rating: '4.7', reviews: 92, eta: '1 Hour', warranty: '90-Day', badges: ['Quality'], techsAvailable: 4, bookedToday: 11, image: 'https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-007', category: 'mobile', title: 'Back Glass Repair', desc: 'Laser back glass replacement.', price: '₹2,999', rating: '4.8', reviews: 74, eta: '2 Hours', warranty: '90-Day', badges: ['Trending'], techsAvailable: 3, bookedToday: 8, image: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-008', category: 'mobile', title: 'iPad Display Replacement', desc: 'Liquid Retina display replacement.', price: '₹8,999', rating: '4.9', reviews: 63, eta: 'Same Day', warranty: '6-Month', badges: ['Apple Certified'], techsAvailable: 2, bookedToday: 4, image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1200&auto=format&fit=crop' },
 
-  // MAC & PC (LAPTOP)
-  { id: 'SRV-002', category: 'laptop', title: 'MacBook Logic Board Repair', desc: 'Micro-soldering & chip-level diagnostics.', price: '₹12,499', rating: '5.0', reviews: 84, eta: '3-5 Days', warranty: '6-Month', badges: ['Premium'], techsAvailable: 2, bookedToday: 3, image: 'https://placehold.co/150x150/f8fafc/334155?text=Logic+Board' },
-  { id: 'SRV-009', category: 'laptop', title: 'Thermal Paste & Deep Clean', desc: 'Dust removal and premium thermal compound application.', price: '₹1,499', rating: '4.9', reviews: 412, eta: '1 Hour', warranty: '30-Day', badges: ['Most Booked'], techsAvailable: 7, bookedToday: 21, image: 'https://placehold.co/150x150/f8fafc/334155?text=Deep+Clean' },
-  { id: 'SRV-010', category: 'laptop', title: 'SSD Storage Upgrade (1TB)', desc: 'NVMe M.2 SSD installation with OS cloning.', price: '₹8,999', rating: '4.8', reviews: 156, eta: '2 Hours', warranty: '1-Year', badges: ['Upgrade'], techsAvailable: 5, bookedToday: 9, image: 'https://placehold.co/150x150/f8fafc/334155?text=SSD+Upgrade' },
-  { id: 'SRV-011', category: 'laptop', title: 'Laptop Screen Assembly', desc: 'Dead pixel check and full display panel replacement.', price: '₹7,999', rating: '4.7', reviews: 78, eta: 'Same Day', warranty: '6-Month', badges: ['Guaranteed'], techsAvailable: 3, bookedToday: 4, image: 'https://placehold.co/150x150/f8fafc/334155?text=Laptop+Screen' },
-  { id: 'SRV-012', category: 'laptop', title: 'Keyboard & Trackpad Fix', desc: 'Butterfly/Scissor switch replacement and trackpad calibration.', price: '₹4,499', rating: '4.6', reviews: 104, eta: 'Same Day', warranty: '90-Day', badges: ['Common'], techsAvailable: 4, bookedToday: 6, image: 'https://placehold.co/150x150/f8fafc/334155?text=Keyboard' },
+  // LAPTOPS
+  { id: 'SRV-009', category: 'laptop', title: 'MacBook Logic Board Repair', desc: 'Chip-level diagnostics & repair.', price: '₹12,499', rating: '5.0', reviews: 84, eta: '3-5 Days', warranty: '6-Month', badges: ['Premium'], techsAvailable: 2, bookedToday: 3, image: 'https://images.unsplash.com/photo-1517336714739-489689fd1ca8?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-010', category: 'laptop', title: 'SSD Upgrade 1TB', desc: 'NVMe SSD upgrade with OS cloning.', price: '₹8,999', rating: '4.8', reviews: 156, eta: '2 Hours', warranty: '1-Year', badges: ['Upgrade'], techsAvailable: 5, bookedToday: 9, image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-011', category: 'laptop', title: 'Laptop Screen Replacement', desc: 'Full HD/4K panel replacement.', price: '₹7,999', rating: '4.7', reviews: 78, eta: 'Same Day', warranty: '6-Month', badges: ['Guaranteed'], techsAvailable: 3, bookedToday: 4, image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-012', category: 'laptop', title: 'Thermal Paste & Cleaning', desc: 'Deep cooling system cleanup.', price: '₹1,499', rating: '4.9', reviews: 412, eta: '1 Hour', warranty: '30-Day', badges: ['Most Booked'], techsAvailable: 7, bookedToday: 21, image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-013', category: 'laptop', title: 'Keyboard Replacement', desc: 'Mechanical & membrane keyboard fix.', price: '₹2,499', rating: '4.7', reviews: 134, eta: '2 Hours', warranty: '90-Day', badges: ['Common'], techsAvailable: 4, bookedToday: 7, image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-014', category: 'laptop', title: 'RAM Upgrade', desc: 'DDR4/DDR5 memory installation.', price: '₹5,999', rating: '4.8', reviews: 67, eta: '1 Hour', warranty: '1-Year', badges: ['Upgrade'], techsAvailable: 5, bookedToday: 8, image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?q=80&w=1200&auto=format&fit=crop' },
 
   // APPLIANCES
-  { id: 'SRV-003', category: 'appliances', title: 'AC Deep Chemical Wash', desc: 'Coil descaling & gas pressure check.', price: '₹999', rating: '4.8', reviews: 342, eta: '2 Hours', warranty: '30-Day', badges: ['Trending'], techsAvailable: 8, bookedToday: 45, image: 'https://placehold.co/150x150/f8fafc/334155?text=AC+Wash' },
-  { id: 'SRV-013', category: 'appliances', title: 'Refrigerator Gas Refill', desc: 'Compressor check, leak fixing, and R134a/R600a refill.', price: '₹1,899', rating: '4.7', reviews: 215, eta: '3 Hours', warranty: '90-Day', badges: ['Emergency'], techsAvailable: 6, bookedToday: 14, image: 'https://placehold.co/150x150/f8fafc/334155?text=Fridge+Gas' },
-  { id: 'SRV-014', category: 'appliances', title: 'Washing Machine Drum Repair', desc: 'Bearing replacement and spin-cycle calibration.', price: '₹2,999', rating: '4.6', reviews: 145, eta: 'Same Day', warranty: '6-Month', badges: ['Heavy Duty'], techsAvailable: 4, bookedToday: 7, image: 'https://placehold.co/150x150/f8fafc/334155?text=Washer+Repair' },
-  { id: 'SRV-015', category: 'appliances', title: 'Microwave Magnetron Swap', desc: 'High-voltage diode test and magnetron replacement.', price: '₹1,299', rating: '4.9', reviews: 88, eta: '1 Hour', warranty: '90-Day', badges: ['Fast'], techsAvailable: 5, bookedToday: 9, image: 'https://placehold.co/150x150/f8fafc/334155?text=Microwave' },
-  { id: 'SRV-016', category: 'appliances', title: 'RO Purifier Filter Change', desc: 'Sediment, Carbon, and RO membrane replacement.', price: '₹899', rating: '4.8', reviews: 520, eta: '45 mins', warranty: 'N/A', badges: ['Most Booked'], techsAvailable: 10, bookedToday: 32, image: 'https://placehold.co/150x150/f8fafc/334155?text=RO+Filter' },
-  { id: 'SRV-017', category: 'appliances', title: 'AC Inverter PCB Repair', desc: 'Component level repair for Inverter AC boards.', price: '₹2,499', rating: '4.7', reviews: 112, eta: '1-2 Days', warranty: '90-Day', badges: ['Technical'], techsAvailable: 3, bookedToday: 5, image: 'https://placehold.co/150x150/f8fafc/334155?text=AC+PCB' },
+  { id: 'SRV-015', category: 'appliances', title: 'AC Deep Chemical Wash', desc: 'Coil cleaning & cooling optimization.', price: '₹999', rating: '4.8', reviews: 342, eta: '2 Hours', warranty: '30-Day', badges: ['Trending'], techsAvailable: 8, bookedToday: 45, image: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-016', category: 'appliances', title: 'Refrigerator Gas Refill', desc: 'Leak fixing & gas refill.', price: '₹1,899', rating: '4.7', reviews: 215, eta: '3 Hours', warranty: '90-Day', badges: ['Emergency'], techsAvailable: 6, bookedToday: 14, image: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-017', category: 'appliances', title: 'Washing Machine Repair', desc: 'Drum & motor repair service.', price: '₹2,999', rating: '4.6', reviews: 145, eta: 'Same Day', warranty: '6-Month', badges: ['Heavy Duty'], techsAvailable: 4, bookedToday: 7, image: 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-018', category: 'appliances', title: 'Microwave Repair', desc: 'Magnetron & fuse replacement.', price: '₹1,299', rating: '4.9', reviews: 88, eta: '1 Hour', warranty: '90-Day', badges: ['Fast'], techsAvailable: 5, bookedToday: 9, image: 'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-019', category: 'appliances', title: 'Dishwasher Pump Repair', desc: 'Drain pump replacement service.', price: '₹2,499', rating: '4.6', reviews: 56, eta: 'Same Day', warranty: '6-Month', badges: ['Premium'], techsAvailable: 3, bookedToday: 4, image: 'https://images.unsplash.com/photo-1586208958839-06c17cacdf08?q=80&w=1200&auto=format&fit=crop' },
 
-  // SMART HOME / ELECTRONICS
-  { id: 'SRV-018', category: 'electronics', title: '55" LED TV Backlight Repair', desc: 'Diffuser alignment and LED strip replacement.', price: '₹3,499', rating: '4.8', reviews: 134, eta: 'Same Day', warranty: '6-Month', badges: ['Popular'], techsAvailable: 4, bookedToday: 6, image: 'https://placehold.co/150x150/f8fafc/334155?text=TV+Backlight' },
-  { id: 'SRV-019', category: 'electronics', title: 'Smart Lock Calibration', desc: 'Motor torque adjustment and biometric reset.', price: '₹999', rating: '4.9', reviews: 45, eta: '1 Hour', warranty: '30-Day', badges: ['Security'], techsAvailable: 2, bookedToday: 3, image: 'https://placehold.co/150x150/f8fafc/334155?text=Smart+Lock' },
-  { id: 'SRV-020', category: 'electronics', title: 'CCTV Network Setup', desc: 'DVR/NVR configuration and IP camera alignment.', price: '₹1,499', rating: '4.7', reviews: 201, eta: '3 Hours', warranty: '90-Day', badges: ['Essential'], techsAvailable: 5, bookedToday: 15, image: 'https://placehold.co/150x150/f8fafc/334155?text=CCTV+Setup' },
-  { id: 'SRV-021', category: 'electronics', title: 'Home Theatre Amplifier Fix', desc: 'Audio channel IC replacement and tuning.', price: '₹2,899', rating: '4.6', reviews: 76, eta: '2 Days', warranty: '6-Month', badges: ['Premium'], techsAvailable: 2, bookedToday: 2, image: 'https://placehold.co/150x150/f8fafc/334155?text=Amplifier' },
-  { id: 'SRV-022', category: 'electronics', title: 'Smart Thermostat Wiring', desc: 'C-wire installation and hub synchronization.', price: '₹799', rating: '4.8', reviews: 32, eta: '1 Hour', warranty: '30-Day', badges: ['Quick'], techsAvailable: 3, bookedToday: 4, image: 'https://placehold.co/150x150/f8fafc/334155?text=Thermostat' },
-  { id: 'SRV-023', category: 'electronics', title: 'TV Mainboard Reflowing', desc: 'BGA rework for HDMI and power issues.', price: '₹4,500', rating: '4.7', reviews: 58, eta: '2-3 Days', warranty: '90-Day', badges: ['Advanced'], techsAvailable: 2, bookedToday: 1, image: 'https://placehold.co/150x150/f8fafc/334155?text=TV+Mainboard' },
-  { id: 'SRV-024', category: 'electronics', title: 'Smart Speaker Firmware Flash', desc: 'Unbricking and connectivity troubleshooting.', price: '₹499', rating: '4.9', reviews: 89, eta: '30 mins', warranty: 'N/A', badges: ['Fast'], techsAvailable: 6, bookedToday: 11, image: 'https://placehold.co/150x150/f8fafc/334155?text=Smart+Speaker' }
-]; // [cite: 119-128]
+  // ELECTRONICS
+  { id: 'SRV-020', category: 'electronics', title: 'Smart TV Repair', desc: 'Backlight & motherboard repair.', price: '₹3,499', rating: '4.8', reviews: 134, eta: 'Same Day', warranty: '6-Month', badges: ['Popular'], techsAvailable: 4, bookedToday: 6, image: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-021', category: 'electronics', title: 'CCTV Installation', desc: 'Full home security setup.', price: '₹4,999', rating: '4.7', reviews: 201, eta: '4 Hours', warranty: '1-Year', badges: ['Security'], techsAvailable: 5, bookedToday: 15, image: 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-022', category: 'electronics', title: 'WiFi Router Optimization', desc: 'Mesh setup & signal tuning.', price: '₹799', rating: '4.8', reviews: 184, eta: '1 Hour', warranty: '30-Day', badges: ['Home Network'], techsAvailable: 6, bookedToday: 13, image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-023', category: 'electronics', title: 'Home Theatre Setup', desc: 'Dolby Atmos speaker calibration.', price: '₹1,999', rating: '4.8', reviews: 92, eta: '2 Hours', warranty: '30-Day', badges: ['Premium Audio'], techsAvailable: 3, bookedToday: 7, image: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=1200&auto=format&fit=crop' },
 
-export default function ServiceMarketplace() {
-  const { search } = useLocation(); // [cite: 129]
-  const queryParams = new URLSearchParams(search); // [cite: 129]
-  // Fallback checks both 'query' and 'q' to handle logic from both Hero and SearchBar
-  const urlQuery = queryParams.get('query') || queryParams.get('q') || ''; // [cite: 130]
+  // GAMING
+  { id: 'SRV-024', category: 'gaming', title: 'PS5 HDMI Port Repair', desc: 'HDMI 2.1 micro-soldering fix.', price: '₹5,499', rating: '4.9', reviews: 93, eta: '1 Day', warranty: '6-Month', badges: ['Gaming'], techsAvailable: 2, bookedToday: 4, image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-025', category: 'gaming', title: 'Nintendo Switch Repair', desc: 'Joy-Con drift & display repair.', price: '₹899', rating: '4.7', reviews: 211, eta: '45 mins', warranty: '90-Day', badges: ['Fast'], techsAvailable: 4, bookedToday: 14, image: 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-026', category: 'gaming', title: 'Gaming PC Optimization', desc: 'RGB setup & airflow optimization.', price: '₹1,999', rating: '4.8', reviews: 122, eta: '2 Hours', warranty: '30-Day', badges: ['Trending'], techsAvailable: 5, bookedToday: 8, image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?q=80&w=1200&auto=format&fit=crop' },
 
-  const [activeCat, setActiveCat] = useState('mobile'); // [cite: 130]
-  const [isLoading, setIsLoading] = useState(false); // [cite: 131]
-  const [selectedService, setSelectedService] = useState(null); // [cite: 131]
-  const [searchQuery, setSearchQuery] = useState(urlQuery); // [cite: 131]
-  const [sortBy, setSortBy] = useState('Recommended'); 
-  const addToCart = useStore((state) => state.addToCart); // [cite: 132]
+  // HOME SERVICES
+  { id: 'SRV-027', category: 'home', title: 'Smart Doorbell Installation', desc: 'WiFi smart bell setup.', price: '₹1,299', rating: '4.9', reviews: 51, eta: '1 Hour', warranty: '90-Day', badges: ['Smart Home'], techsAvailable: 3, bookedToday: 5, image: 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-028', category: 'home', title: 'Ceiling Fan Repair', desc: 'Bearing lubrication & repair.', price: '₹499', rating: '4.7', reviews: 390, eta: '30 mins', warranty: '30-Day', badges: ['Budget'], techsAvailable: 9, bookedToday: 27, image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-029', category: 'home', title: 'Smart Lock Installation', desc: 'Biometric lock fitting service.', price: '₹2,199', rating: '4.9', reviews: 63, eta: '1 Hour', warranty: '6-Month', badges: ['Smart Home'], techsAvailable: 4, bookedToday: 8, image: 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=1200&auto=format&fit=crop' },
 
-  useEffect(() => {
-    setSearchQuery(urlQuery); // [cite: 132]
-  }, [urlQuery]); // [cite: 132]
+  // PREMIUM
+  { id: 'SRV-030', category: 'premium', title: 'Enterprise Device Audit', desc: 'Corporate hardware inspection.', price: '₹24,999', rating: '5.0', reviews: 18, eta: 'Custom', warranty: '1-Year', badges: ['Enterprise'], techsAvailable: 2, bookedToday: 1, image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-031', category: 'premium', title: 'Data Recovery Service', desc: 'SSD/HDD forensic recovery.', price: '₹14,999', rating: '5.0', reviews: 31, eta: '5-7 Days', warranty: 'Confidential', badges: ['Secure'], techsAvailable: 1, bookedToday: 1, image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop' },
 
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(timer);
-  }, [activeCat, sortBy]);
+  // SUBSCRIPTIONS
+  { id: 'SRV-032', category: 'subscription', title: 'Annual Laptop Care Plan', desc: 'Priority diagnostics & cleaning.', price: '₹3,999/yr', rating: '4.9', reviews: 208, eta: 'Subscription', warranty: '1-Year', badges: ['Membership'], techsAvailable: 10, bookedToday: 18, image: 'https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-033', category: 'subscription', title: 'Home Appliance AMC', desc: 'Annual maintenance contract.', price: '₹6,999/yr', rating: '4.8', reviews: 164, eta: 'Subscription', warranty: '1-Year', badges: ['Family Plan'], techsAvailable: 12, bookedToday: 9, image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1200&auto=format&fit=crop' },
+
+  // EXTRA SERVICES
+  { id: 'SRV-034', category: 'mobile', title: 'Face ID Repair', desc: 'TrueDepth camera restoration.', price: '₹4,499', rating: '4.8', reviews: 88, eta: '2 Hours', warranty: '90-Day', badges: ['Apple'], techsAvailable: 3, bookedToday: 7, image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-035', category: 'gaming', title: 'Xbox Controller Repair', desc: 'Stick drift & trigger repair.', price: '₹1,299', rating: '4.7', reviews: 74, eta: '1 Hour', warranty: '90-Day', badges: ['Gaming'], techsAvailable: 4, bookedToday: 9, image: 'https://images.unsplash.com/photo-1605901309584-818e25960a8f?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-036', category: 'electronics', title: 'Projector Installation', desc: 'Home theatre projector mounting.', price: '₹3,999', rating: '4.8', reviews: 57, eta: '3 Hours', warranty: '1-Year', badges: ['Premium'], techsAvailable: 2, bookedToday: 3, image: 'https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-037', category: 'appliances', title: 'Water Purifier Service', desc: 'RO filter cleaning & replacement.', price: '₹799', rating: '4.8', reviews: 280, eta: '1 Hour', warranty: '30-Day', badges: ['Essential'], techsAvailable: 6, bookedToday: 19, image: 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?q=80&w=1200&auto=format&fit=crop' },
+  { id: 'SRV-038', category: 'home', title: 'LED Strip Lighting Setup', desc: 'Ambient smart lighting setup.', price: '₹1,499', rating: '4.8', reviews: 117, eta: '2 Hours', warranty: '90-Day', badges: ['Trending'], techsAvailable: 5, bookedToday: 14, image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop' },
+
+  // CONTINUE SAME PATTERN TILL 50+
+];
+
+const CATEGORIES = [
+  { id: 'all', label: 'All Services', icon: '⚡', count: mockServices.length },
+  { id: 'mobile', label: 'Mobile Devices', icon: '📱', count: mockServices.filter(s => s.category === 'mobile').length },
+  { id: 'laptop', label: 'Mac & PC', icon: '💻', count: mockServices.filter(s => s.category === 'laptop').length },
+  { id: 'appliances', label: 'Appliances', icon: '🏠', count: mockServices.filter(s => s.category === 'appliances').length },
+  { id: 'electronics', label: 'Electronics', icon: '📺', count: mockServices.filter(s => s.category === 'electronics').length },
+  { id: 'gaming', label: 'Gaming', icon: '🎮', count: mockServices.filter(s => s.category === 'gaming').length },
+  { id: 'home', label: 'Smart Home', icon: '🔧', count: mockServices.filter(s => s.category === 'home').length },
+  { id: 'premium', label: 'Premium', icon: '👑', count: mockServices.filter(s => s.category === 'premium').length },
+  { id: 'subscription', label: 'Subscriptions', icon: '🔄', count: mockServices.filter(s => s.category === 'subscription').length },
+];
+
+const SORT_OPTIONS = ['Recommended', 'Price: Low to High', 'Price: High to Low', 'Top Rated', 'Most Booked'];
+const BADGE_QUICK_FILTERS = ['Most Booked', 'Same Day', 'Emergency', 'Fast', 'Premium'];
+
+const BADGE_COLORS = {
+  'Most Booked': { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
+  'Same Day':    { bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
+  'Emergency':   { bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+  'Fast':        { bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
+  'Premium':     { bg: '#faf5ff', text: '#7c3aed', border: '#e9d5ff' },
+  'Trending':    { bg: '#fff1f2', text: '#be123c', border: '#fecdd3' },
+  'Upgrade':     { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
+  'Membership':  { bg: '#faf5ff', text: '#7c3aed', border: '#e9d5ff' },
+  'AMC':         { bg: '#faf5ff', text: '#7c3aed', border: '#e9d5ff' },
+  'default':     { bg: '#f8fafc', text: '#475569', border: '#e2e8f0' },
+};
+
+const getBadgeStyle = (badge) => BADGE_COLORS[badge] || BADGE_COLORS['default'];
+
+const CATEGORY_ICONS = {
+  mobile: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>),
+  laptop: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M0 21h24"/></svg>),
+  appliances: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20"/><circle cx="7" cy="6" r="1"/></svg>),
+  electronics: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>),
+  gaming: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15" cy="11" r="1"/><circle cx="17" cy="13" r="1"/><path d="M5 8h14a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4a2 2 0 012-2z"/></svg>),
+  home: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>),
+  premium: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>),
+  subscription: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0118.8-4.3M22 12.5a10 10 0 01-18.8 4.2"/></svg>),
+  all: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>),
+};
+
+const StarIcon = ({ filled }) => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill={filled ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>
+);
+
+const CartIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+    <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/>
+  </svg>
+);
+
+const InfoIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+  </svg>
+);
+
+const FireIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="#ef4444" stroke="none">
+    <path d="M12 2C8.5 6 7 9 9 13c-2.5-1-3-3-3-3C4 14 5 19 12 22c7-3 8-8 6-12-1 1-2 2-4 2 2-3 1-7-2-10z"/>
+  </svg>
+);
+
+const getRatingStars = (rating) => {
+  const r = parseFloat(rating);
+  return [1,2,3,4,5].map(i => <StarIcon key={i} filled={i <= Math.round(r)} />);
+};
+
+function ServiceCard({ service, onAddToCart }) {
+  const [hovered, setHovered] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const handleAdd = () => {
+    onAddToCart(service);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] pt-40 pb-24 font-sans selection:bg-blue-600 selection:text-white">
-      <div className="max-w-[1400px] mx-auto px-6 mb-8">
-        
-        {/* PREMIUM GLASS-MORPHISM SEARCH & SORT BAR */}
-        <div className="bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-4 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100 flex flex-col lg:flex-row items-center justify-between gap-6 sticky top-24 z-40 transition-all duration-300">
-          
-          <div className="flex-1 w-full">
-            <SearchBar /> 
-          </div>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: '#ffffff',
+        borderRadius: 20,
+        border: hovered ? '1.5px solid #2563eb' : '1.5px solid #e8edf5',
+        boxShadow: hovered
+          ? '0 12px 40px rgba(37,99,235,0.13), 0 2px 8px rgba(0,0,0,0.06)'
+          : '0 2px 12px rgba(0,0,0,0.04)',
+        transition: 'all 0.25s cubic-bezier(.4,0,.2,1)',
+        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+      }}
+    >
+      <div style={{
+        height: 3,
+        background: hovered ? 'linear-gradient(90deg, #2563eb, #06b6d4)' : '#f1f5f9',
+        transition: 'background 0.3s',
+      }} />
 
-          {/* FUNCTIONAL SORT DROPDOWN */}
-          <div className="flex items-center gap-3 w-full lg:w-auto shrink-0 z-[41]">
-            <div className="relative group w-full lg:w-auto">
-              <select 
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none w-full pl-6 pr-14 py-4 bg-gray-50 border border-transparent hover:border-blue-600 focus:border-blue-600 rounded-[1.5rem] text-sm font-black tracking-wide text-gray-800 transition-all outline-none cursor-pointer shadow-inner"
-              >
-                <option value="Recommended">Recommended</option>
-                <option value="Rating">Top Rated</option>
-                <option value="Reviews">Most Reviewed</option>
-                <option value="Price: Low to High">Price: Low to High</option>
-              </select>
-              <div className="absolute right-5 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-sm flex items-center justify-center pointer-events-none">
-                <ChevronDown size={14} className="text-gray-900" />
-              </div>
+      <img 
+        src={service.image} 
+        alt={service.title}
+        style={{ 
+          width: '100%', 
+          height: '160px', 
+          objectFit: 'cover', 
+          borderBottom: '1px solid #f1f5f9' 
+        }} 
+      />
+
+      <div style={{ padding: '22px 22px 18px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+          {service.badges.slice(0, 2).map(badge => {
+            const s = getBadgeStyle(badge);
+            return (
+              <span key={badge} style={{
+                background: s.bg, color: s.text, border: `1px solid ${s.border}`,
+                borderRadius: 20, fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                padding: '3px 10px', textTransform: 'uppercase',
+              }}>{badge}</span>
+            );
+          })}
+        </div>
+
+        <h3 style={{
+          fontSize: 15, fontWeight: 700, color: '#0f172a', margin: '0 0 6px',
+          lineHeight: 1.3, fontFamily: '"Plus Jakarta Sans", "DM Sans", sans-serif',
+        }}>{service.title}</h3>
+
+        <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 16px', lineHeight: 1.5 }}>{service.desc}</p>
+
+        <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <ClockIcon />
+            <span style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>{service.eta}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <ShieldIcon />
+            <span style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>{service.warranty}</span>
+          </div>
+        </div>
+
+        <div style={{ height: 1, background: '#f1f5f9', margin: '0 0 16px' }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>Starting from</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', fontFamily: '"Plus Jakarta Sans", sans-serif', letterSpacing: '-0.02em' }}>
+              {service.price}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ display: 'flex', gap: 2, justifyContent: 'flex-end', marginBottom: 3 }}>
+              {getRatingStars(service.rating)}
+            </div>
+            <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>
+              {service.rating} <span style={{ color: '#94a3b8', fontWeight: 400 }}>({service.reviews})</span>
             </div>
           </div>
         </div>
+
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button
+            onClick={handleAdd}
+            style={{
+              flex: 1, padding: '12px 0',
+              background: added ? 'linear-gradient(135deg, #16a34a, #15803d)' : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+              color: '#fff', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 700,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 7, transition: 'all 0.2s',
+              boxShadow: added ? '0 4px 12px rgba(22,163,74,0.3)' : '0 4px 12px rgba(37,99,235,0.3)',
+              letterSpacing: '0.01em',
+            }}
+          >
+            <CartIcon />
+            {added ? 'Added!' : 'Add to Cart'}
+          </button>
+          <button style={{
+            width: 42, height: 42, borderRadius: 12, border: '1.5px solid #e2e8f0', background: '#f8fafc',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', flexShrink: 0,
+          }}>
+            <InfoIcon />
+          </button>
+        </div>
+
+        {service.bookedToday > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 12, justifyContent: 'center' }}>
+            <FireIcon />
+            <span style={{ fontSize: 11, color: '#ef4444', fontWeight: 600 }}>
+              {service.bookedToday} booked today in your area
+            </span>
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
 
-      <div className="max-w-[1400px] mx-auto px-6 flex flex-col lg:flex-row gap-10">
-        {/* SIDEBAR CATEGORIES */}
-        <aside className="hidden lg:flex flex-col w-72 shrink-0">
-          <div className="sticky top-48 flex flex-col gap-8">
-            <div>
-              <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4 pl-2">Categories</h3>
-              <div className="flex flex-col gap-2">
-                {categories.map(cat => (
-                  <button 
-                     key={cat.id} // [cite: 137]
-                    onClick={() => {
-                      setActiveCat(cat.id); // [cite: 137]
-                      setSearchQuery(''); // [cite: 138]
-                    }}
-                    className={`flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 ${activeCat === cat.id ? 'bg-blue-600 text-white shadow-[0_8px_20px_rgba(37,99,235,0.25)]' : 'text-gray-600 hover:bg-gray-100'}`} // [cite: 138-139]
-                  >
-                    <div className="flex items-center gap-3">
-                      <cat.icon size={18} strokeWidth={2.5} />
-                      <span className="font-bold text-sm">{cat.name}</span>
-                    </div>
-                    <span className={`text-[10px] font-black px-2 py-1 rounded-lg ${activeCat === cat.id ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                      {cat.count}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+function CategoryItem({ cat, isActive, onClick }) {
+  return (
+    <button
+      onClick={() => onClick(cat.id)}
+      style={{
+        width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', borderRadius: 12, border: 'none',
+        background: isActive ? '#2563eb' : 'transparent', color: isActive ? '#fff' : '#374151', cursor: 'pointer',
+        textAlign: 'left', transition: 'all 0.18s', marginBottom: 2,
+      }}
+      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#f0f6ff'; }}
+      onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
+    >
+      <span style={{
+        width: 36, height: 36, borderRadius: 10, background: isActive ? 'rgba(255,255,255,0.2)' : '#f0f6ff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? '#fff' : '#2563eb', flexShrink: 0,
+      }}>
+        {CATEGORY_ICONS[cat.id] || CATEGORY_ICONS.all}
+      </span>
+      <span style={{ flex: 1, fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em' }}>{cat.label}</span>
+      <span style={{
+        fontSize: 11, fontWeight: 700, background: isActive ? 'rgba(255,255,255,0.25)' : '#e8edf5', color: isActive ? '#fff' : '#64748b',
+        borderRadius: 20, padding: '2px 8px', minWidth: 24, textAlign: 'center',
+      }}>{cat.count}</span>
+    </button>
+  );
+}
 
-            <div className="bg-gray-900 rounded-[2rem] p-8 text-white relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/40 transition-all"></div>
-              <ShieldCheck size={28} className="text-blue-500 mb-4" />
-              <h4 className="text-lg font-black mb-2">RepairX Protect</h4>
-              <p className="text-gray-400 text-xs leading-relaxed mb-6">Get 1-year extended warranty on all repairs.</p>
-              <button className="text-xs font-bold uppercase tracking-widest text-blue-400 hover:text-white transition-colors">Learn More →</button>
+export default function ServiceMarketplace() {
+  const navigate = useNavigate();
+  const addToCart = useStore((state) => state.addToCart); // [cite: 34]
+  const cartItems = useStore((state) => state.cart || []); 
+
+  const [activeCategory, setActiveCategory] = useState('all');
+const queryParams = new URLSearchParams(location.search);
+const urlQuery = queryParams.get('q') || '';
+
+const [searchQuery, setSearchQuery] = useState(urlQuery);
+  const [sortBy, setSortBy] = useState('Recommended');
+  const [quickFilter, setQuickFilter] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+  const queryParams = new URLSearchParams(location.search);
+  const q = queryParams.get('q') || '';
+  
+  setSearchQuery(q);
+}, [location.search]);
+
+  const filtered = mockServices.filter(s => {
+    const matchCat = activeCategory === 'all' || s.category === activeCategory;
+    const matchSearch = !searchQuery || s.title.toLowerCase().includes(searchQuery.toLowerCase()) || s.desc.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchQuick = !quickFilter || s.badges.includes(quickFilter);
+    return matchCat && matchSearch && matchQuick;
+  });
+
+  const sorted = [...filtered].sort((a, b) => {
+    const parsePrice = p => parseInt(p.replace(/[^0-9]/g, ''));
+    if (sortBy === 'Price: Low to High') return parsePrice(a.price) - parsePrice(b.price);
+    if (sortBy === 'Price: High to Low') return parsePrice(b.price) - parsePrice(a.price);
+    if (sortBy === 'Top Rated') return parseFloat(b.rating) - parseFloat(a.rating);
+    if (sortBy === 'Most Booked') return b.bookedToday - a.bookedToday;
+    return 0;
+  });
+
+  const categoryLabel = CATEGORIES.find(c => c.id === activeCategory)?.label || 'All Services';
+
+  return (
+    <div style={{
+      height: '100vh', /* Locks entire page to screen height */
+      display: 'flex',
+      flexDirection: 'column',
+      paddingTop: '80px', /* Ensure this matches your global Header height */
+      background: '#f6f8fc',
+      fontFamily: '"Plus Jakarta Sans", "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif',
+      opacity: mounted ? 1 : 0,
+      transition: 'opacity 0.4s',
+      overflow: 'hidden' /* Prevents the whole page from scrolling */
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+        * { box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+      `}</style>
+
+      {/* ── NON-STICKY SEARCH BAR CONTAINER ── */}
+      <div style={{ padding: '20px 32px', flexShrink: 0 }}>
+        <div style={{ 
+          maxWidth: 1400, margin: '0 auto', display: 'flex', gap: 12, alignItems: 'center',
+          background: '#fff', padding: '12px 20px', borderRadius: 24,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.03)', border: '1px solid #e8edf5'
+        }}>
+          
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: 8, padding: '0 18px', height: 46,
+            border: '1.5px solid #e2e8f0', borderRadius: 12, background: '#f8fafc',
+            fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer', whiteSpace: 'nowrap',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            Select Location
+          </button>
+
+          <div style={{ flex: 1, position: 'relative' }}>
+            <input
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="What service do you need?"
+              style={{
+                width: '100%', height: 46, border: '1.5px solid #e2e8f0', borderRadius: 12, padding: '0 50px 0 18px',
+                fontSize: 14, color: '#0f172a', outline: 'none', background: '#f8fafc', transition: 'border-color 0.2s', fontFamily: 'inherit',
+              }}
+              onFocus={e => e.target.style.borderColor = '#2563eb'}
+              onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+            />
+            <div style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', width: 34, height: 34, borderRadius: 8, background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
             </div>
           </div>
+
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+            style={{
+              height: 46, border: '1.5px solid #e2e8f0', borderRadius: 12, padding: '0 16px', fontSize: 13, fontWeight: 600,
+              color: '#374151', background: '#f8fafc', cursor: 'pointer', outline: 'none', fontFamily: 'inherit', minWidth: 160,
+            }}
+          >
+            {SORT_OPTIONS.map(o => <option key={o}>{o}</option>)}
+          </select>
+
+          {/* CART REDIRECT BUTTON */}
+          <button
+            onClick={() => navigate('/cart')}
+            style={{
+              position: 'relative', width: 46, height: 46, borderRadius: 12, border: '1.5px solid #e2e8f0',
+              background: '#f8fafc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#374151', flexShrink: 0,
+            }}
+          >
+            <CartIcon />
+            {cartItems.length > 0 && (
+              <span style={{
+                position: 'absolute', top: -6, right: -6, width: 20, height: 20, background: '#2563eb', color: '#fff', borderRadius: '50%',
+                fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff',
+              }}>{cartItems.length}</span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ── FLEXIBLE BODY ROW ── */}
+      <div style={{ flex: 1, maxWidth: 1400, margin: '0 auto', width: '100%', display: 'flex', gap: 28, padding: '0 32px 20px', overflow: 'hidden' }}>
+
+        {/* ── STATIC SIDEBAR ── */}
+        <aside style={{ width: 260, flexShrink: 0, display: 'flex', flexDirection: 'column', overflowY: 'auto', paddingBottom: '20px' }}>
+          <div style={{ background: '#fff', borderRadius: 20, border: '1.5px solid #e8edf5', padding: '20px 14px', marginBottom: 20, boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0 6px 12px' }}>
+              CATEGORIES
+            </div>
+            {CATEGORIES.map(cat => (
+              <CategoryItem key={cat.id} cat={cat} isActive={activeCategory === cat.id} onClick={setActiveCategory} />
+            ))}
+          </div>
+
+          
+
+          {/* ── FOOTER AREA ── */}
+       
         </aside>
 
-        {/* MAIN CONTENT AREA */}
-        <div className="flex-1 flex flex-col gap-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">
-              {searchQuery ? 'Search Results' : `${categories.find(c => c.id === activeCat)?.name} Repairs`}
-            </h1>
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide w-full md:w-auto pb-2 md:pb-0">
-              {['Most Booked', 'Same Day', 'Emergency'].map(badge => (
-                <span key={badge} className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-700 whitespace-nowrap cursor-pointer hover:border-blue-600 transition-colors">
-                  {badge}
-                </span>
+        {/* ── SCROLLING MAIN CONTENT (THE RED BOX) ── */}
+        <main style={{ flex: 1, overflowY: 'auto', paddingRight: '12px', paddingBottom: '60px' }}>
+          
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+            <div>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.03em', fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+                {categoryLabel}
+              </h1>
+              <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0', fontWeight: 500 }}>
+                {sorted.length} service{sorted.length !== 1 ? 's' : ''} available
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {BADGE_QUICK_FILTERS.map(f => (
+                <button
+                  key={f}
+                  onClick={() => setQuickFilter(quickFilter === f ? null : f)}
+                  style={{
+                    padding: '7px 16px', borderRadius: 20, border: quickFilter === f ? '1.5px solid #2563eb' : '1.5px solid #e2e8f0',
+                    background: quickFilter === f ? '#eff6ff' : '#fff', color: quickFilter === f ? '#2563eb' : '#64748b',
+                    fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s', letterSpacing: '0.02em',
+                  }}
+                >{f}</button>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {isLoading 
-              ? Array(6).fill(0).map((_, i) => (
-                  <div key={i} className="bg-white border border-gray-100 rounded-[2rem] h-[380px] animate-pulse p-6 flex flex-col">
-                    <div className="h-12 w-12 bg-gray-200 rounded-2xl mb-4"></div>
-                    <div className="h-6 w-3/4 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 w-1/2 bg-gray-200 rounded mb-8"></div>
-                    <div className="mt-auto h-12 w-full bg-gray-200 rounded-xl"></div>
-                  </div>
-                ))
-              : mockServices
-                  // 1. Category & Search Filtering
-                  .filter(s => searchQuery ? true : s.category === activeCat) // [cite: 149]
-                  .filter(s => 
-                    s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                    s.desc.toLowerCase().includes(searchQuery.toLowerCase()) // [cite: 149-150]
-                  )
-                  // 2. Sorting Logic
-                  .sort((a, b) => {
-                    if (sortBy === 'Rating') return parseFloat(b.rating) - parseFloat(a.rating);
-                    if (sortBy === 'Reviews') return b.reviews - a.reviews;
-                    if (sortBy === 'Price: Low to High') {
-                      const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
-                      const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
-                      return priceA - priceB;
-                    }
-                    return 0; // Default: Recommended maintains original array order
-                  })
-                  .map(service => (
-                <div key={service.id} className="group bg-white border border-gray-100 rounded-[2rem] p-6 hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:border-blue-100 transition-all duration-500 flex flex-col relative overflow-hidden">
-                  
-                  <div className="flex justify-between items-start mb-6 relative z-10">
-                    <div className="flex gap-2">
-                      {service.badges.map(badge => (
-                        <span key={badge} className="bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg">
-                           {badge}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="relative z-10 flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">{service.title}</h3>
-                    <p className="text-sm text-gray-500 mb-6 line-clamp-2">{service.desc}</p>
-                    
-                    <div className="flex items-center gap-4 text-xs font-bold text-gray-700 mb-6 bg-gray-50 p-3 rounded-2xl">
-                      <div className="flex items-center gap-1.5"><Clock size={14} className="text-blue-500" /> {service.eta}</div>
-                      <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                      <div className="flex items-center gap-1.5"><ShieldCheck size={14} className="text-blue-500" /> {service.warranty}</div>
-                    </div>
-                  </div>
-
-                  <div className="relative z-10 border-t border-gray-100 pt-6 mt-auto">
-                    <div className="flex justify-between items-end mb-4">
-                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Starting from</p>
-                        <p className="text-2xl font-black text-gray-900">{service.price}</p>
-                      </div>
-                       <div className="text-right">
-                        <div className="flex items-center gap-1 text-sm font-bold text-gray-900"><Star size={14} className="fill-yellow-400 text-yellow-400"/> {service.rating}</div>
-                        <p className="text-[10px] text-gray-500">({service.reviews} reviews)</p>
-                      </div>
-                     </div>
-
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => addToCart(service)} // [cite: 158]
-                        className="flex-1 bg-gray-900 text-white py-3.5 rounded-xl text-sm font-bold hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 active:scale-95 shadow-md"
-                      >
-                        Add to Cart <ShoppingCart size={16} />
-                      </button>
-                      <button 
-                         onClick={() => setSelectedService(service)} // [cite: 160]
-                        className="p-3.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors border border-gray-100"
-                      >
-                         <Info size={18} />
-                      </button>
-                    </div>
-                    
-                    <p className="text-[10px] text-center font-bold text-green-600 mt-4 bg-green-50 py-1.5 rounded-lg border border-green-100">
-                      🔥 {service.bookedToday} booked today in your area
-                    </p>
-                  </div>
-                </div>
+          {sorted.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '80px 0', color: '#94a3b8' }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#374151', marginBottom: 8 }}>No services found</div>
+              <div style={{ fontSize: 14 }}>Try a different search or category</div>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: 20 }}>
+              {sorted.map(service => (
+                <ServiceCard key={service.id} service={service} onAddToCart={addToCart} />
               ))}
-          </div>
-        </div>
+            </div>
+          )}
+        </main>
+
       </div>
-
-      {/* Info Modal */}
-      {selectedService && ( // [cite: 163]
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-all">
-          <div className="bg-white rounded-[2rem] p-8 max-w-md w-full relative shadow-2xl border border-gray-100">
-            <button 
-                onClick={() => setSelectedService(null)} // [cite: 164]
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors"
-            >
-              <X size={24} />
-            </button>
-            <h2 className="text-2xl font-black text-gray-900 mb-2">{selectedService.title}</h2>
-            <p className="text-gray-500 mb-6">{selectedService.desc}</p>
-            
-            <div className="space-y-4 mb-8 bg-gray-50 p-6 rounded-[1.5rem] border border-gray-100">
-              <div className="flex justify-between border-b border-gray-200 pb-3">
-                <span className="text-sm text-gray-500 font-bold uppercase tracking-widest">Price</span>
-                <span className="text-sm font-black text-blue-600">{selectedService.price}</span>
-              </div>
-              <div className="flex justify-between border-b border-gray-200 pb-3">
-                <span className="text-sm text-gray-500 font-bold uppercase tracking-widest">ETA</span>
-                <span className="text-sm font-black text-gray-900">{selectedService.eta}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-500 font-bold uppercase tracking-widest">Warranty</span>
-                <span className="text-sm font-black text-gray-900">{selectedService.warranty}</span>
-              </div>
-            </div>
-            
-            <button 
-              onClick={() => {
-                addToCart(selectedService); // [cite: 168]
-                setSelectedService(null); // [cite: 168]
-              }} 
-              className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-black transition-all shadow-xl shadow-blue-600/20"
-            >
-              Add to Cart
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

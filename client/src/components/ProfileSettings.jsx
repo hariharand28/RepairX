@@ -88,13 +88,7 @@ export default function ProfileSettings() {
         </div>
 
         <div className="relative">
-  <input 
-    type="text" 
-    placeholder="Service Address (e.g., Street, City, ZIP)" 
-    className="w-full p-4 bg-[#1a1a1a] text-white rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all" 
-    value={address} 
-    onChange={(e) => setAddress(e.target.value)} 
-  />
+ 
 </div>
 
         <div>

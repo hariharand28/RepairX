@@ -13,6 +13,9 @@ import PremiumFooter from './components/PremiumFooter';
 import ScrollToTop from './components/ScrollToTop';
 import Dashboard from './pages/Dashboard';
 
+import Careers from './components/Careers';
+import PrivacyPolicy from './components/PrivacyPolicy';
+
 // Pages
 import ServiceMarketplace from './components/ServiceMarketplace';
 import Cart from './pages/Cart';
@@ -68,6 +71,8 @@ const isLoginPage = location.pathname === '/login' || location.pathname === '/da
 
           {/* User Dashboard Route */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
         </Routes>
       </main>
