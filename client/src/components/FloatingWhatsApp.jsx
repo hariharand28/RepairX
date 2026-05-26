@@ -12,7 +12,7 @@ const FloatingWhatsApp = () => {
   )}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999]">
+    <div className="fixed bottom-16 right-7 z-[9999]">
       {/* Pulse Ring */}
       <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-20"></div>
 
