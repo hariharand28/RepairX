@@ -143,21 +143,28 @@ const RateUs = () => {
                 ></textarea>
 
                 {/* PROFESSIONAL BUTTON LOGIC */}
-                <button
-                  disabled={!isFormValid}
-                  className={`group w-full h-14 rounded-2xl text-white font-semibold text-lg shadow-lg transition-all duration-300 flex items-center justify-center gap-3
-                  
-                  ${
-                    isFormValid
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-[1.02] hover:shadow-blue-300/50 cursor-pointer"
-                      : "bg-gray-300 cursor-not-allowed shadow-none"
-                  }
-                  `}
-                >
-                  Submit Review
+<button
+  disabled={!isFormValid}
+  onClick={() => {
+    alert("✅ Review submitted successfully!");
 
-                  <Send className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </button>
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1200);
+  }}
+  className={`group w-full h-14 rounded-2xl text-white font-semibold text-lg shadow-lg transition-all duration-300 flex items-center justify-center gap-3
+  
+  ${
+    isFormValid
+      ? "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-[1.02] hover:shadow-blue-300/50 cursor-pointer"
+      : "bg-gray-300 cursor-not-allowed shadow-none"
+  }
+  `}
+>
+  Submit Review
+
+  <Send className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+</button>
 
                 {/* VALIDATION TEXT */}
                 {!isFormValid && (

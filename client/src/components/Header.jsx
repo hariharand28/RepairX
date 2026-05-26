@@ -286,7 +286,7 @@ className={`max-w-[1450px] mx-auto flex items-center justify-between gap-5 px-6 
            {/* Desktop Profile/Login Button (Permanent Gradient) */}
             <Link to={user ? "/dashboard" : "/login"} className="hidden md:block group relative">
               <div className="absolute inset-0 bg-gradient-to-r from-[#2563eb] to-[#06b6d4] rounded-full blur-md opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-<button className="relative flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white pl-5 pr-6 py-2.5 rounded-full text-[13px] font-bold tracking-wide shadow-md transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-lg border border-white/10 max-w-[170px]">
+<button className="relative flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white pl-5 pr-6 py-2.5 rounded-full text-[13px] font-bold tracking-wide shadow-md transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-lg border border-white/10 max-w-[150px]">
                 <User size={16} strokeWidth={2.5} /> 
                 <span className="truncate max-w-[90px]">
   {profileName}
