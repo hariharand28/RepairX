@@ -333,6 +333,7 @@ const [searchQuery, setSearchQuery] = useState(urlQuery);
 
   const filtered = mockServices.filter(s => {
     const matchCat = activeCategory === 'all' || s.category === activeCategory;
+    
     const matchSearch = !searchQuery || s.title.toLowerCase().includes(searchQuery.toLowerCase()) || s.desc.toLowerCase().includes(searchQuery.toLowerCase());
     const matchQuick = !quickFilter || s.badges.includes(quickFilter);
     return matchCat && matchSearch && matchQuick;
@@ -348,13 +349,14 @@ const [searchQuery, setSearchQuery] = useState(urlQuery);
   });
 
   const categoryLabel = CATEGORIES.find(c => c.id === activeCategory)?.label || 'All Services';
+  
 
   return (
     <div style={{
       height: '100vh', /* Locks entire page to screen height */
       display: 'flex',
       flexDirection: 'column',
-      paddingTop: '80px', /* Ensure this matches your global Header height */
+      paddingTop: '110px', /* Ensure this matches your global Header height */
       background: '#f6f8fc',
       fontFamily: '"Plus Jakarta Sans", "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif',
       opacity: mounted ? 1 : 0,

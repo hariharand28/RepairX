@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { supabase } from './supabase'; 
 import useStore from './store/useStore';
+import FloatingWhatsApp from "./components/FloatingWhatsApp";
+
 
 // Components
 import Header from './components/Header';
@@ -12,6 +14,11 @@ import TrustSection from './components/TrustSection';
 import PremiumFooter from './components/PremiumFooter';
 import ScrollToTop from './components/ScrollToTop';
 import Dashboard from './pages/Dashboard';
+import FAQ from "./components/FAQ";
+import WarrantyPolicy from "./components/WarrantyPolicy";
+
+
+import RateUs from './components/RateUs'; // adjust path if saved in components
 
 import Careers from './components/Careers';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -73,6 +80,9 @@ const isLoginPage = location.pathname === '/login' || location.pathname === '/da
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/rate-us" element={<RateUs />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/warranty-policy" element={<WarrantyPolicy />} />
 
         </Routes>
       </main>
@@ -81,6 +91,7 @@ const isLoginPage = location.pathname === '/login' || location.pathname === '/da
       {!isLoginPage && (
         <div id="about">
           <PremiumFooter />
+          <FloatingWhatsApp />
         </div>
       )}
     </div>

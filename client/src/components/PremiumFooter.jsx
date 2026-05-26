@@ -127,7 +127,7 @@ export default function PremiumFooter() {
   const socialLinks = [
     { icon: Globe, label: 'Website', url: 'https://repair-x-gamma.vercel.app', target: '_blank' },
     { icon: Share2, label: 'Share', url: '#', action: () => navigator.share?.({ title: 'RepairX', url: window.location.href }) },
-    { icon: MessageCircle, label: 'Support', url: 'mailto:support@repairx.com', target: '_self' },
+    { icon: MessageCircle, label: 'Support', url: 'mailto:hariharand2888@gmail.com', target: '_self' },
     { icon: Layout, label: 'Dashboard', url: '/dashboard', target: '_self' }
   ];
 
@@ -147,6 +147,7 @@ export default function PremiumFooter() {
         </a>
       ))}
     </div>
+
   );
 })()}
 

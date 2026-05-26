@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { User, Menu, X, ShoppingCart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import useStore from '../store/useStore';
 import { supabase } from '../supabase';
 import SearchBar from './SearchBar';
 import HeaderSearchBar from './HeaderSearchBar';
+import {
+  User,
+  Menu,
+  X,
+  ShoppingCart,
+  Star,
+  ChevronDown,
+  MessageCircle,
+  ShieldCheck,
+  HelpCircle
+} from 'lucide-react';
+
 
 export default function Header() {
   // --- ORIGINAL STATE & LOGIC ---
@@ -13,6 +24,7 @@ export default function Header() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const [profileName, setProfileName] = useState('Profile');
   const [role, setRole] = useState(null);
   
@@ -73,17 +85,17 @@ export default function Header() {
   }, [user]);
 
   // Conditional Navigation
-  const navLinks = role === 'partner' 
+ const navLinks = role === 'partner' 
     ? [
         { name: 'Home', path: '/' },
         { name: 'Partner Dashboard', path: '/dashboard' }
       ]
     : [
-        { name: 'Home', path: '/' },
-        { name: 'Services', path: '/services' },
-        { name: 'How It Works', path: '/#how-it-works' }, 
-        { name: 'About Us', path: '/#about' }, 
-      ];
+    { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services' },
+    { name: 'Careers', path: '/careers' },
+    { name: 'Rate Us', path: '/rate-us', hasStar: true },
+  ];
 
   // --- PREMIUM UI RENDER ---
   return (
@@ -94,14 +106,14 @@ export default function Header() {
         }`}
       >
         <nav 
-          className={`max-w-[1200px] mx-auto flex items-center justify-between px-6 py-2.5 rounded-full transition-all duration-500 ${
-            isScrolled 
+className={`max-w-[1450px] mx-auto flex items-center justify-between gap-5 px-6 py-2.5 rounded-full transition-all duration-500 ${
+              isScrolled 
               ? 'bg-white/85 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-gray-200/50 scale-[0.98]' 
               : 'bg-white/60 backdrop-blur-lg border border-white/40 shadow-sm scale-100'
           }`}
         >
           {/* LOGO & PARTNER BADGE */}
-          <div className="flex items-center gap-4 group">
+          <div className="flex items-center gap-4 group shrink-0">
             <Link to="/" className="flex items-center gap-2.5 transition-transform duration-300 hover:scale-105">
               <img src={logo} alt="RepairX Logo" className="h-12 w-auto drop-shadow-sm" />
              
@@ -115,31 +127,149 @@ export default function Header() {
           </div>
           
 
-          {/* DESKTOP NAVIGATION (Linear/Apple Aesthetic) */}
-          <div className="hidden md:flex items-center gap-1 bg-gray-100/50 border border-gray-200/60 rounded-full px-1.5 py-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
-            {navLinks.map((link, index) => {
-              const isActive = location.pathname === link.path;
-              return (
-                <Link 
-                  key={index} 
-                  to={link.path} 
-                  className={`px-5 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all duration-300 ${
-                    isActive 
-                      ? 'bg-white text-[#0f172a] shadow-sm border border-gray-200/50' 
-                      : 'text-gray-500 hover:text-[#0f172a] hover:bg-white/60'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
-          </div>
+          {/* DESKTOP NAVIGATION */}
+         {/* DESKTOP NAVIGATION */}
+<div className="hidden xl:flex items-center gap-1 bg-gray-100/50 border border-gray-200/60 rounded-full px-2 py-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] shrink-0">
+
+  {/* NORMAL NAV ITEMS */}
+  {navLinks.map((link, index) => {
+    const isActive = location.pathname === link.path;
+
+    return (
+      <Link
+        key={index}
+        to={link.path}
+        className={`whitespace-nowrap flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[13px] font-bold tracking-wide transition-all duration-300 ${
+          isActive
+            ? 'bg-white text-[#0f172a] shadow-sm border border-gray-200/50'
+            : 'text-gray-500 hover:text-[#0f172a] hover:bg-white/70'
+        }`}
+      >
+        {link.hasStar && (
+          <Star
+            size={14}
+            className={
+              isActive
+                ? "fill-yellow-400 text-yellow-400"
+                : "text-gray-400"
+            }
+          />
+        )}
+
+        <span>{link.name}</span>
+      </Link>
+    );
+  })}
+
+  {/* SUPPORT DROPDOWN */}
+  <div
+    className="relative"
+    onMouseEnter={() => setSupportOpen(true)}
+    onMouseLeave={() => setSupportOpen(false)}
+  >
+    <button className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold tracking-wide text-gray-500 hover:text-[#0f172a] hover:bg-white/70 transition-all duration-300">
+      Support
+      <ChevronDown
+        size={15}
+        className={`transition-transform duration-300 ${
+          supportOpen ? "rotate-180" : ""
+        }`}
+      />
+    </button>
+
+    {/* DROPDOWN */}
+    <div
+      className={`absolute top-[120%] left-0 w-64 bg-white/95 backdrop-blur-xl border border-gray-200 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.08)] p-3 transition-all duration-300 z-50 ${
+        supportOpen
+          ? "opacity-100 visible translate-y-0"
+          : "opacity-0 invisible -translate-y-2"
+      }`}
+    >
+      <Link
+        to="/faq"
+        className="flex items-center gap-3 px-4 py-4 rounded-2xl hover:bg-blue-50 transition-all duration-300 group"
+      >
+        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+          <HelpCircle className="text-blue-600 w-5 h-5" />
+        </div>
+
+        <div>
+          <p className="font-bold text-[#06142E] text-sm">
+            FAQ
+          </p>
+          <p className="text-xs text-gray-500">
+            Common questions
+          </p>
+        </div>
+      </Link>
+
+      <a
+        href="https://wa.me/919600949684"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 px-4 py-4 rounded-2xl hover:bg-green-50 transition-all duration-300 group"
+      >
+        <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+          <MessageCircle className="text-green-600 w-5 h-5" />
+        </div>
+
+        <div>
+          <p className="font-bold text-[#06142E] text-sm">
+            Chat With Us
+          </p>
+          <p className="text-xs text-gray-500">
+            WhatsApp support
+          </p>
+        </div>
+      </a>
+
+      <Link
+        to="/warranty-policy"
+        className="flex items-center gap-3 px-4 py-4 rounded-2xl hover:bg-cyan-50 transition-all duration-300 group"
+      >
+        <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center">
+          <ShieldCheck className="text-cyan-600 w-5 h-5" />
+        </div>
+
+        <div>
+          <p className="font-bold text-[#06142E] text-sm">
+            Warranty Policy
+          </p>
+          <p className="text-xs text-gray-500">
+            Repair warranty details
+          </p>
+        </div>
+      </Link>
+    </div>
+  </div>
+</div>
+
+          
+
           
           <HeaderSearchBar />
 
           {/* ACTIONS */}
-          <div className="flex items-center gap-5">
-            {/* Desktop Cart Icon */}
+          <div className="flex items-center gap-4 shrink-0">
+          
+            {/* Track Repair Link */}
+            {/* Track Repair Link with Live Pulsing Indicator */}
+<Link 
+  to="/dashboard" 
+  className="hidden md:flex items-center gap-2 px-4 py-2 bg-blue-50/50 border border-blue-200 rounded-full text-[12px] font-bold tracking-wide text-blue-700 hover:bg-blue-100 transition-all duration-300"
+>
+  {/* The Blinking/Pulsing Dot */}
+  <div className="relative flex h-2.5 w-2.5">
+    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600"></span>
+  </div>
+  
+  <span className="hidden lg:block whitespace-nowrap">Track Repair</span>
+</Link>
+
+
+
+              {/* Desktop Cart Icon */}
             {role !== 'partner' && (
               <Link to="/cart" className="relative p-2 text-gray-500 hover:text-[#2563eb] transition-colors duration-300 hidden md:block group">
                 <ShoppingCart size={22} strokeWidth={2.2} />
@@ -150,6 +280,8 @@ export default function Header() {
                 )}
               </Link>
             )}
+
+           
 
            {/* Desktop Profile/Login Button (Permanent Gradient) */}
             <Link to={user ? "/dashboard" : "/login"} className="hidden md:block group relative">

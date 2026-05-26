@@ -8,18 +8,18 @@ export default function Hero() {
   const navigate = useNavigate();
 
   return (
-    <section className="relative pt-36 pb-24 lg:pt-48 lg:pb-32 overflow-hidden bg-[#f8fafc] font-sans selection:bg-[#2563eb] selection:text-white">
+    <section className="relative pt-22 pb-24 lg:pt-25 lg:pb-32 overflow-hidden bg-[#f8fafc] font-sans selection:bg-[#2563eb] selection:text-white">
       
       {/* ── CINEMATIC BACKGROUND ── */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Image anchored to right with seamless fade to left */}
         <div 
-          className="absolute inset-y-0 right-0 w-full lg:w-[65%] bg-cover bg-left lg:bg-center opacity-90"
-          style={{ backgroundImage: `url(${heroBg})` }}
-        />
+  className="absolute inset-y-0 right-0 w-full lg:w-[65%] bg-cover bg-center"
+  style={{ backgroundImage: `url(${heroBg})` }}
+/>
         {/* Complex Gradient Masks */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#f8fafc] via-[#f8fafc]/95 to-transparent lg:via-[#f8fafc]/70" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#f8fafc]/40 via-transparent to-[#f6f8fc]" />
+<div className="absolute inset-0 bg-gradient-to-r from-[#f8fafc] via-[#f8fafc]/60 to-transparent lg:via-[#f8fafc]/30" />
+<div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#f6f8fc]/20" />
         
         {/* Ambient Glowing Orbs (Linear/Stripe Style) */}
         <div className="absolute top-[10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#2563eb]/15 to-[#60a5fa]/10 blur-[120px]" />
@@ -59,7 +59,7 @@ export default function Hero() {
               to="/services" 
               className="group relative flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-[#0f172a] text-white rounded-full font-bold tracking-wide overflow-hidden shadow-[0_8px_20px_rgba(15,23,42,0.15)] hover:shadow-[0_8px_30px_rgba(37,99,235,0.3)] transition-all duration-500 hover:-translate-y-1"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-[#2563eb] to-[#1e3a8a] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#2563eb] to-[#1e3a8a] opacity-0 group-hover: transition-opacity duration-500" />
               <span className="relative z-10">Book a Service</span>
               <ArrowRight size={18} strokeWidth={2.5} className="relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
