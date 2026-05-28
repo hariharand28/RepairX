@@ -128,7 +128,7 @@ export default function PremiumFooter() {
     { icon: Globe, label: 'Website', url: 'https://repair-x-gamma.vercel.app', target: '_blank' },
     { icon: Share2, label: 'Share', url: '#', action: () => navigator.share?.({ title: 'RepairX', url: window.location.href }) },
     { icon: MessageCircle, label: 'Support', url: 'mailto:hariharand2888@gmail.com', target: '_self' },
-    { icon: Layout, label: 'Dashboard', url: '/dashboard', target: '_self' }
+    { icon: Layout, label: 'Dashboard', url: 'https://repair-x-gamma.vercel.app', target: '_self' }
   ];
 
   return (
