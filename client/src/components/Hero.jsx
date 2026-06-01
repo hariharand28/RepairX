@@ -8,8 +8,8 @@ export default function Hero() {
   const navigate = useNavigate();
 
   return (
-    <section className="relative pt-22 pb-24 lg:pt-25 lg:pb-32 overflow-hidden bg-[#f8fafc] font-sans selection:bg-[#2563eb] selection:text-white">
-      
+<section className="relative pt-22 pb-24 lg:pt-25 lg:pb-32 overflow-visible bg-[#f8fafc] font-sans selection:bg-[#2563eb] selection:text-white">
+        
       {/* ── CINEMATIC BACKGROUND ── */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Image anchored to right with seamless fade to left */}
@@ -73,8 +73,8 @@ export default function Hero() {
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex items-center gap-6 text-sm font-semibold text-gray-600 mb-14">
-            <div className="flex items-center gap-2">
+<div className="flex items-center gap-6 text-sm font-semibold text-gray-600 mb-2">
+              <div className="flex items-center gap-2">
               <div className="flex -space-x-1">
                 <Star size={16} className="fill-yellow-400 text-yellow-400" />
                 <Star size={16} className="fill-yellow-400 text-yellow-400" />
